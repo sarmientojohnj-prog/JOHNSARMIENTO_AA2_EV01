@@ -1,3 +1,4 @@
+package modelo;
 /**
  * CLASE ENTIDAD: DetallePedido
  * Esta clase sirve para  representar a los detalles de cada pedido creado en Java.

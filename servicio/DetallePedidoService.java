@@ -1,5 +1,9 @@
+package servicio;
 import java.sql.*;
 import java.util.ArrayList;
+
+import conexion.ConexionDB;
+import modelo.DetallePedido;
 
 // * Servicio encargado de gestionar los productos dentro de un pedido. Maneja cálculos de subtotal y control de inventario (Stock).
 

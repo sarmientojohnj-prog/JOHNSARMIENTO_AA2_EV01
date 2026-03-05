@@ -1,3 +1,10 @@
+import modelo.DetallePedido;
+import servicio.ClienteService;
+import servicio.DetallePedidoService;
+import servicio.FacturaService;
+import servicio.PedidoService;
+import servicio.ProductoService;
+
 /**
  * CLASE PRINCIPAL (MAIN)
  * Aquí es donde se desarrolla todo el sistema de ventas.

@@ -1,3 +1,4 @@
+package conexion;
 import java.sql.Connection; // crea el puente de comunicación entre Java y MySQL.
 import java.sql.DriverManager;      // Es el administrador que gestiona las diferentes conexiones.
 import java.sql.SQLException;       // Es el traductor de errores de SQL; si algo falla en la base de datos, el avisa.

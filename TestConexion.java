@@ -1,5 +1,7 @@
 import java.sql.Connection;
 
+import conexion.ConexionDB;
+
 public class TestConexion {
 
     public static void main(String[] args) {

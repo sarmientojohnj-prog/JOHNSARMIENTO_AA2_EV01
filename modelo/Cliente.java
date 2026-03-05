@@ -1,3 +1,4 @@
+package modelo;
 /**
  * CLASE ENTIDAD: Cliente
  * Esta clase sirve para  representar a los clientes en Java.

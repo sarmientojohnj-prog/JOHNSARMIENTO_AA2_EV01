@@ -1,3 +1,4 @@
+package modelo;
 /**
  * CLASE ENTIDAD: Factura
  * Esta clase sirve para  representar las facturas en Java.
