@@ -1,3 +1,8 @@
+/**
+ * CLASE ENTIDAD: Cliente
+ * Esta clase sirve para  representar a los clientes en Java.
+ * Cada variable corresponde a una columna de la tabla 'clientes' en MySQL.
+ */
 public class Cliente {
     private int id;
     private String nombre;
@@ -5,12 +10,16 @@ public class Cliente {
     private String telefono;
 
     // Getters y Setters
+    // Sirven para que otras clases puedan leer (get) o modificar (set) los datos de forma segura.
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+    
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+    
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
 }

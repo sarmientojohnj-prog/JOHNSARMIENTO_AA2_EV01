@@ -1,6 +1,8 @@
 import java.sql.*;
 import java.util.ArrayList;
 
+// * Servicio encargado de gestionar los productos dentro de un pedido. Maneja cálculos de subtotal y control de inventario (Stock).
+
 public class DetallePedidoService {
 
     // CREAR DETALLE
@@ -13,9 +15,9 @@ public class DetallePedidoService {
 
         try(Connection con = ConexionDB.getConnection()) {
 
-            // verificar producto
+            // verificar si el producto existe y obtener su precio y stock actual
             PreparedStatement psProd = con.prepareStatement(
-                "SELECT stock, precio FROM productos WHERE id=?");
+                "SELECT Disponibilidad, Precio FROM productos WHERE Id_Producto=?");
             psProd.setInt(1, productoId);
             ResultSet rs = psProd.executeQuery();
 
@@ -24,18 +26,21 @@ public class DetallePedidoService {
                 return false;
             }
 
-            int stock = rs.getInt("stock");
-            double precio = rs.getDouble("precio");
+            // Validar que hayan suficientes productos en bodega
+            int stock = rs.getInt("Disponibilidad");
+            double precio = rs.getDouble("Precio");
 
             if(cantidad > stock){
                 System.out.println("❌ Stock insuficiente");
                 return false;
             }
 
+            // Calcular el subtotal (Cantidad x Precio)
             double subtotal = cantidad * precio;
 
+            //Guardar el producto en la tabla de detalles del pedido
             PreparedStatement psInsert = con.prepareStatement(
-                "INSERT INTO detalle_pedido (pedido_id, producto_id, cantidad, subtotal) VALUES (?,?,?,?)");
+                "INSERT INTO detalle_pedido (Id_Pedido_FK, Id_Producto_FK, Cantidad, Precio_Unitario) VALUES (?,?,?,?)");
 
             psInsert.setInt(1, pedidoId);
             psInsert.setInt(2, productoId);
@@ -43,14 +48,14 @@ public class DetallePedidoService {
             psInsert.setDouble(4, subtotal);
             psInsert.executeUpdate();
 
-            // actualizar stock
+            // Actualizar el stock en la tabla productos (Restar lo que se vendió)
             PreparedStatement psUpdate = con.prepareStatement(
-                "UPDATE productos SET stock = stock - ? WHERE id=?");
+                "UPDATE productos SET Disponibilidad = Disponibilidad - ? WHERE Id_Producto=?");
             psUpdate.setInt(1, cantidad);
             psUpdate.setInt(2, productoId);
             psUpdate.executeUpdate();
 
-            System.out.println("✅ Detalle agregado");
+            System.out.println("✅ Detalle agregado");//mensaje de confirmacion de la modificacion realizada
             return true;
 
         }catch(SQLException e){
@@ -60,24 +65,28 @@ public class DetallePedidoService {
     }
 
 
-    // LISTAR DETALLES
+    // LISTAR DETALLES (MÉTODO PARA VER TODOS LOS PRODUCTOS COMPRADOS (CON NOMBRES))
     public ArrayList<DetallePedido> listarDetalles(){
 
         ArrayList<DetallePedido> lista = new ArrayList<>();
 
         try(Connection con = ConexionDB.getConnection()){
 
+            // Uso de JOIN para traer el nombre del producto desde la tabla 'productos'
             PreparedStatement ps = con.prepareStatement(
-                "SELECT * FROM detalle_pedido");
+                "SELECT d.*, p.Nombre \r\n" + // 
+                "FROM detalle_pedido d \r\n" + //
+                "JOIN productos p ON d.Id_Producto_FK = p.Id_Producto");
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
                 DetallePedido d = new DetallePedido();
-                d.setId(rs.getInt("id"));
-                d.setPedidoId(rs.getInt("pedido_id"));
-                d.setProductoId(rs.getInt("producto_id"));
-                d.setCantidad(rs.getInt("cantidad"));
-                d.setSubtotal(rs.getDouble("subtotal"));
+                d.setId(rs.getInt("Id_Pedido_FK"));
+                d.setPedidoId(rs.getInt("Id_Pedido_FK"));
+                d.setProductoId(rs.getInt("Id_Producto_FK"));
+                d.setnombreProducto(rs.getString("Nombre")); // Nombre proveniente del JOIN
+                d.setCantidad(rs.getInt("Cantidad"));
+                d.setSubtotal(rs.getDouble("Precio_Unitario"));
                 lista.add(d);
             }
 
@@ -89,7 +98,7 @@ public class DetallePedidoService {
     }
 
 
-    // ACTUALIZAR DETALLE
+    // ACTUALIZAR DETALLE (MÉTODO PARA CAMBIAR LA CANTIDAD DE UN PRODUCTO YA ANOTADO)
     public boolean actualizarCantidad(int id, int nuevaCantidad){
 
         if(nuevaCantidad <= 0){
@@ -117,24 +126,24 @@ public class DetallePedidoService {
     }
 
 
-    // ELIMINAR DETALLE
-    public boolean eliminarDetalle(int id){
+    // ELIMINAR DETALLE usando Pedido y Producto
+public boolean eliminarDetalle(int pedidoId, int productoId) {
+    try (Connection con = ConexionDB.getConnection()) {
+        // Borramos donde coincidan AMBOS datos
+        String sql = "DELETE FROM detalle_pedido WHERE Id_Pedido_FK=? AND Id_Producto_FK=?";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, pedidoId);
+        ps.setInt(2, productoId);
 
-        try(Connection con = ConexionDB.getConnection()){
-
-            PreparedStatement ps = con.prepareStatement(
-                "DELETE FROM detalle_pedido WHERE id=?");
-            ps.setInt(1, id);
-
-            if(ps.executeUpdate() > 0){
-                System.out.println("🗑 Detalle eliminado");
-                return true;
-            }
-
-        }catch(SQLException e){
-            e.printStackTrace();
+        int filas = ps.executeUpdate();
+        if (filas > 0) {
+            System.out.println("🗑️ Producto eliminado del pedido con éxito.");
+            return true;
         }
-
+        return false;
+    } catch (SQLException e) {
+        e.printStackTrace();
         return false;
     }
+}
 }
