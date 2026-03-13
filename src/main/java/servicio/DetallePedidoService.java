@@ -1,6 +1,7 @@
 package servicio;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import conexion.ConexionDB;
 import modelo.DetallePedido;
@@ -70,7 +71,7 @@ public class DetallePedidoService {
 
 
     // LISTAR DETALLES (MÉTODO PARA VER TODOS LOS PRODUCTOS COMPRADOS (CON NOMBRES))
-    public ArrayList<DetallePedido> listarDetalles(){
+    public List<DetallePedido> listarDetalles(){
 
         ArrayList<DetallePedido> lista = new ArrayList<>();
 

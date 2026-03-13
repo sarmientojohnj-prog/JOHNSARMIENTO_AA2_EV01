@@ -51,28 +51,30 @@ public class ClienteService {
 
     // CONSULTAR TODOS
     public ArrayList<Cliente> listarClientes() {
-        ArrayList<Cliente> lista = new ArrayList<>();
+    ArrayList<Cliente> lista = new ArrayList<>();
+    
+    String sql = "SELECT * FROM persona"; 
 
-        try (Connection con = ConexionDB.getConnection()) {
-            String sql = "SELECT * FROM persona";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+    try (Connection con = ConexionDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
 
-            while(rs.next()) {
-                Cliente c = new Cliente();
-                c.setId(rs.getInt("idPersona"));
-                c.setNombre(rs.getString("Nombre"));
-                c.setEmail(rs.getString("Correo_Electronico"));
-                c.setTelefono(rs.getString("Telefono"));
-                lista.add(c);
-            }
-
-        } catch(SQLException e) {
-            e.printStackTrace();
+        while(rs.next()) {
+            Cliente c = new Cliente();
+            c.setId(rs.getInt("idPersona"));
+            c.setNombre(rs.getString("Nombre"));
+            c.setApellidos(rs.getString("Apellidos")); 
+            c.setIdentificacion(rs.getString("Identificacion")); 
+            c.setDireccion(rs.getString("Direccion")); 
+            c.setTelefono(rs.getString("Telefono"));
+            c.setEmail(rs.getString("Correo_Electronico"));
+            lista.add(c);
         }
-
-        return lista;
+    } catch(SQLException e) {
+        e.printStackTrace();
     }
+    return lista;
+}
 
     // ACTUALIZAR
     public boolean actualizarCliente(int id, String nombre, String email, String telefono) {

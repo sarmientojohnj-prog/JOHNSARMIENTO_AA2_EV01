@@ -1,6 +1,12 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "mysql-connector-j-9.6.0.jar"
-    ]
+        "mysql-connector-j-9.6.0.jar",
+        "c:\\xampp\\tomcat\\lib\\servlet-api.jar",
+        "c:\\tomcat\\apache-tomcat-10.1.52-windows-x64\\apache-tomcat-10.1.52\\lib\\servlet-api.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src/main/java"
+    ],
+    "java.project.outputPath": "bin"
 }
